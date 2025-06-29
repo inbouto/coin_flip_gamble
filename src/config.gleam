@@ -6,6 +6,8 @@ pub const init_rounds = 100
 
 pub const init_odds = 50
 
+pub const minimum_bet = 1000
+
 pub const canvas_id = "canvas"
 
 pub const never_bet_name = "honest 9 to 5"
@@ -37,3 +39,7 @@ pub const all_in_then_quit_name = "All in then quit"
 pub const all_in_then_quit_color = "#42A5F5"
 
 pub const all_in_then_quit_limit = 100_000
+
+pub const always_ten_percent_name = "Always 10%"
+
+pub const always_ten_percent_color = "#8BC34A"

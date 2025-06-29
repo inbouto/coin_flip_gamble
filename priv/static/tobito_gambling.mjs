@@ -353,6 +353,16 @@ function structurallyCompatibleObjects(a, b) {
   if (nonstructural.some((c) => a instanceof c)) return false;
   return a.constructor === b.constructor;
 }
+function divideInt(a, b) {
+  return Math.trunc(divideFloat(a, b));
+}
+function divideFloat(a, b) {
+  if (b === 0) {
+    return 0;
+  } else {
+    return a / b;
+  }
+}
 function makeError(variant, file, module, line, fn, message, extra) {
   let error = new globalThis.Error(message);
   error.gleam_error = variant;
@@ -19590,6 +19600,7 @@ var init_income = 1e3;
 var initial_funds = 1e4;
 var init_rounds = 100;
 var init_odds = 50;
+var minimum_bet = 1e3;
 var canvas_id = "canvas";
 var never_bet_name = "honest 9 to 5";
 var never_bet_color = "#000000";
@@ -19606,6 +19617,8 @@ var all_in_with_limit_limit = 1e4;
 var all_in_then_quit_name = "All in then quit";
 var all_in_then_quit_color = "#42A5F5";
 var all_in_then_quit_limit = 1e5;
+var always_ten_percent_name = "Always 10%";
+var always_ten_percent_color = "#8BC34A";
 
 // build/dev/javascript/tobito_gambling/compute.mjs
 var Strategy = class extends CustomType {
@@ -19654,6 +19667,9 @@ function all_in_then_quit(last_round_funds, _, limit) {
     return last_round_funds;
   }
 }
+function always_ten_percent(last_round_funds, _) {
+  return divideInt(last_round_funds, 10);
+}
 function compute(rounds, income_per_round, initial_funds2, odds) {
   let never_bet_strategy = new Strategy(
     never_bet_name,
@@ -19691,13 +19707,19 @@ function compute(rounds, income_per_round, initial_funds2, odds) {
     all_in_then_quit_color,
     all_in_then_quit_fn
   );
+  let always_ten_percent$1 = new Strategy(
+    always_ten_percent_name,
+    always_ten_percent_color,
+    always_ten_percent
+  );
   let strategies = toList([
     never_bet_strategy,
     always_same_bet_strategy,
     slow_and_steady$1,
     always_all_in$1,
     all_in_with_limit$1,
-    all_in_then_quit$1
+    all_in_then_quit$1,
+    always_ten_percent$1
   ]);
   let tosses = get_tosses(rounds, odds);
   return map(
@@ -19724,12 +19746,20 @@ function compute(rounds, income_per_round, initial_funds2, odds) {
           }
           let current_wager$1 = _block$1;
           let _block$2;
-          if (current_result) {
-            _block$2 = current_wager$1;
+          let $1 = current_wager$1 < minimum_bet;
+          if ($1) {
+            _block$2 = 0;
           } else {
-            _block$2 = -current_wager$1;
+            _block$2 = current_wager$1;
           }
-          let current_wager_result = _block$2;
+          let current_wager$2 = _block$2;
+          let _block$3;
+          if (current_result) {
+            _block$3 = current_wager$2;
+          } else {
+            _block$3 = -current_wager$2;
+          }
+          let current_wager_result = _block$3;
           let current_funds = last_round_funds + income_per_round + current_wager_result;
           return [current_funds, current_wager_result, round_index + 1];
         }
@@ -20232,6 +20262,19 @@ function get4(_) {
                 toList([
                   text3(
                     "All in then quit: Always all in, until we reach 100k, then stop betting altogether."
+                  )
+                ])
+              )
+            ])
+          ),
+          li(
+            toList([]),
+            toList([
+              p(
+                toList([]),
+                toList([
+                  text3(
+                    "Always 10%: always bet 10% of the previous round's funds"
                   )
                 ])
               )

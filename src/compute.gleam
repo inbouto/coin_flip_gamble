@@ -67,6 +67,13 @@ pub fn compute(
       all_in_then_quit_fn,
     )
 
+  let always_ten_percent: Strategy =
+    Strategy(
+      config.always_ten_percent_name,
+      config.always_ten_percent_color,
+      always_ten_percent,
+    )
+
   let strategies = [
     never_bet_strategy,
     always_same_bet_strategy,
@@ -74,6 +81,7 @@ pub fn compute(
     always_all_in,
     all_in_with_limit,
     all_in_then_quit,
+    always_ten_percent,
   ]
 
   let tosses = get_tosses(rounds, odds)
@@ -90,6 +98,10 @@ pub fn compute(
         let current_wager = case current_wager > last_round_funds {
           False -> current_wager
           True -> last_round_funds
+        }
+        let current_wager = case current_wager < config.minimum_bet {
+          False -> current_wager
+          True -> 0
         }
 
         let current_wager_result = case current_result {
@@ -150,4 +162,8 @@ fn all_in_then_quit(last_round_funds: Int, _: Int, limit: Int) -> Int {
     False -> last_round_funds
     True -> 0
   }
+}
+
+fn always_ten_percent(last_round_funds: Int, _: Int) -> Int {
+  last_round_funds / 10
 }

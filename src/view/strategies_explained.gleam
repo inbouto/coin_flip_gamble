@@ -36,6 +36,11 @@ pub fn get(_model: mvu.Model) -> element.Element(mvu.Msg) {
           ),
         ]),
       ]),
+      html.li([], [
+        html.p([], [
+          html.text("Always 10%: always bet 10% of the previous round's funds"),
+        ]),
+      ]),
     ]),
   ])
 }
