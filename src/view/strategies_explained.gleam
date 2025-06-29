@@ -29,6 +29,13 @@ pub fn get(_model: mvu.Model) -> element.Element(mvu.Msg) {
           ),
         ]),
       ]),
+      html.li([], [
+        html.p([], [
+          html.text(
+            "All in then quit: Always all in, until we reach 100k, then stop betting altogether.",
+          ),
+        ]),
+      ]),
     ]),
   ])
 }

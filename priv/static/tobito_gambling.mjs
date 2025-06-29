@@ -19603,6 +19603,9 @@ var always_all_in_color = "#D32F2F";
 var all_in_with_limit_name = "All in up to a point";
 var all_in_with_limit_color = "#00796B";
 var all_in_with_limit_limit = 1e4;
+var all_in_then_quit_name = "All in then quit";
+var all_in_then_quit_color = "#42A5F5";
+var all_in_then_quit_limit = 1e5;
 
 // build/dev/javascript/tobito_gambling/compute.mjs
 var Strategy = class extends CustomType {
@@ -19643,6 +19646,14 @@ function always_all_in(last_round_funds, _) {
 function all_in_with_limit(last_round_funds, _, limit) {
   return min(last_round_funds, limit);
 }
+function all_in_then_quit(last_round_funds, _, limit) {
+  let $ = last_round_funds >= limit;
+  if ($) {
+    return 0;
+  } else {
+    return last_round_funds;
+  }
+}
 function compute(rounds, income_per_round, initial_funds2, odds) {
   let never_bet_strategy = new Strategy(
     never_bet_name,
@@ -19672,12 +19683,21 @@ function compute(rounds, income_per_round, initial_funds2, odds) {
     all_in_with_limit_color,
     all_in_with_limit_fn
   );
+  let all_in_then_quit_fn = (one, two) => {
+    return all_in_then_quit(one, two, all_in_then_quit_limit);
+  };
+  let all_in_then_quit$1 = new Strategy(
+    all_in_then_quit_name,
+    all_in_then_quit_color,
+    all_in_then_quit_fn
+  );
   let strategies = toList([
     never_bet_strategy,
     always_same_bet_strategy,
     slow_and_steady$1,
     always_all_in$1,
-    all_in_with_limit$1
+    all_in_with_limit$1,
+    all_in_then_quit$1
   ]);
   let tosses = get_tosses(rounds, odds);
   return map(
@@ -20199,6 +20219,19 @@ function get4(_) {
                 toList([
                   text3(
                     "All in up to a point: Will all in until it reaches 10k points, after which it only bets 10k points every time."
+                  )
+                ])
+              )
+            ])
+          ),
+          li(
+            toList([]),
+            toList([
+              p(
+                toList([]),
+                toList([
+                  text3(
+                    "All in then quit: Always all in, until we reach 100k, then stop betting altogether."
                   )
                 ])
               )

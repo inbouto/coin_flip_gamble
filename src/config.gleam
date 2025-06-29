@@ -31,3 +31,9 @@ pub const all_in_with_limit_name = "All in up to a point"
 pub const all_in_with_limit_color = "#00796B"
 
 pub const all_in_with_limit_limit = 10_000
+
+pub const all_in_then_quit_name = "All in then quit"
+
+pub const all_in_then_quit_color = "#42A5F5"
+
+pub const all_in_then_quit_limit = 100_000

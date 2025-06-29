@@ -56,12 +56,24 @@ pub fn compute(
       all_in_with_limit_fn,
     )
 
+  let all_in_then_quit_fn = fn(one, two) {
+    all_in_then_quit(one, two, config.all_in_then_quit_limit)
+  }
+
+  let all_in_then_quit: Strategy =
+    Strategy(
+      config.all_in_then_quit_name,
+      config.all_in_then_quit_color,
+      all_in_then_quit_fn,
+    )
+
   let strategies = [
     never_bet_strategy,
     always_same_bet_strategy,
     slow_and_steady,
     always_all_in,
     all_in_with_limit,
+    all_in_then_quit,
   ]
 
   let tosses = get_tosses(rounds, odds)
@@ -131,4 +143,11 @@ fn always_all_in(last_round_funds: Int, _: Int) -> Int {
 
 fn all_in_with_limit(last_round_funds: Int, _: Int, limit: Int) -> Int {
   int.min(last_round_funds, limit)
+}
+
+fn all_in_then_quit(last_round_funds: Int, _: Int, limit: Int) -> Int {
+  case last_round_funds >= limit {
+    False -> last_round_funds
+    True -> 0
+  }
 }
